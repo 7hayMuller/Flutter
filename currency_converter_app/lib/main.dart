@@ -9,7 +9,12 @@ const request = "https://api.hgbrasil.com/finance?format=json&key=a100d601";
 void main() async {
 
   runApp(MaterialApp(
-    home:Home()
+    home:Home(),
+    theme: ThemeData(
+      hintColor: Colors.amber,
+      primaryColor: Colors.white
+    )
+
   ));
 }
 
@@ -24,12 +29,43 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
+
+  final realController = TextEditingController();
+  final dollarController = TextEditingController();
+  final euroController = TextEditingController();
+
+  double dollar;
+  double euro;
+
+  void _realChanged(String text) {
+   double real = double.parse(text);
+   dollarController.text = (real/dollar).toStringAsFixed(2);
+   euroController.text = (real/euro).toStringAsFixed(2);
+
+  }
+  void _dollarChanged(String text){
+    double dollar = double.parse(text);
+    realController.text = (dollar*this.dollar).toStringAsFixed(2);
+    euroController.text = (dollar*this.dollar / euro).toStringAsFixed(2);
+  }
+  void _euroChanged(String text){
+    double euro = double.parse(text);
+    realController.text = (euro*this.euro).toStringAsFixed(2);
+    dollarController.text = (euro*this.euro / dollar).toStringAsFixed(2);
+  }
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      backgroundColor: Colors.black12,
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title:Text('Currency Converter'),
+        title:Text('Cᴜʀʀᴇɴᴄʏ Cᴏɴᴠᴇʀᴛᴇʀ',
+        style: TextStyle(
+          fontSize:25.0,
+          color:Colors.black45
+        )),
         backgroundColor: Colors.amber,
         centerTitle: true,
       ),
@@ -40,7 +76,7 @@ class _HomeState extends State<Home> {
             case ConnectionState.none:
             case ConnectionState.waiting:
               return Center(
-                  child: Text('Loading...',
+                  child: Text('𝙻𝚘𝚊𝚍𝚒𝚗𝚐 ...',
                    style: TextStyle(
                   color: Colors.amber,
                   fontSize:25.0
@@ -51,7 +87,7 @@ class _HomeState extends State<Home> {
             default:
               if(snapshot.hasError){
                 return Center(
-                  child: Text('ERROR :(',
+                  child: Text('𝙴𝚁𝚁𝙾 :(',
                     style: TextStyle(
                         color: Colors.amber,
                         fontSize:25.0
@@ -60,7 +96,23 @@ class _HomeState extends State<Home> {
                   ),
                 );
               } else {
-                return Container(color:Colors.deepPurple);
+                dollar = snapshot.data['results']['currencies']['USD']['buy'];
+                euro = snapshot.data['results']['currencies']['EUR']['buy'];
+                return SingleChildScrollView(
+                  padding: EdgeInsets.all(10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Icon(Icons.monetization_on, size: 150.0, color:Colors.amber),
+                      buildTextField('𝙱𝚛𝚊𝚣𝚒𝚕𝚒𝚊𝚗 𝚁𝚎𝚊𝚕', 'R\$' , realController , _realChanged),
+                      Divider(),
+                      buildTextField('𝙳𝚘𝚕𝚕𝚊𝚛', 'US\$' , dollarController , _dollarChanged),
+                      Divider(),
+                      buildTextField('𝙴𝚞𝚛𝚘', '€' , euroController, _euroChanged),
+                    ],
+                  )
+                );
+
 
               }
           }
@@ -68,6 +120,26 @@ class _HomeState extends State<Home> {
     );
   }
 }
+
+Widget buildTextField(String label , String prefix , TextEditingController controller , Function changeText) {
+  return
+    TextField(
+      controller: controller,
+        decoration: InputDecoration(
+            labelText: label,
+            labelStyle: TextStyle(color:Colors.amber),
+            border:OutlineInputBorder(),
+            prefixText:prefix,
+        ),
+        style: TextStyle(
+            color:Colors.amber, fontSize: 20.0
+        ),
+        onChanged: changeText,
+        keyboardType: TextInputType.number,
+    );
+
+}
+
 
 
 
