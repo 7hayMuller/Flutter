@@ -12,9 +12,14 @@ void main() async {
     home:Home(),
     theme: ThemeData(
       hintColor: Colors.amber,
-      primaryColor: Colors.white
-    )
-
+      primaryColor: Colors.white,
+        inputDecorationTheme: InputDecorationTheme(
+          enabledBorder:
+          OutlineInputBorder(borderSide: BorderSide(color: Colors.white)),
+          focusedBorder:
+          OutlineInputBorder(borderSide: BorderSide(color: Colors.amber)),
+          hintStyle: TextStyle(color: Colors.amber),
+        )),
   ));
 }
 
@@ -39,20 +44,38 @@ class _HomeState extends State<Home> {
   double euro;
 
   void _realChanged(String text) {
+    if(text.isEmpty){
+      _clearAll();
+      return;
+    }
    double real = double.parse(text);
    dollarController.text = (real/dollar).toStringAsFixed(2);
    euroController.text = (real/euro).toStringAsFixed(2);
 
   }
   void _dollarChanged(String text){
+    if(text.isEmpty){
+      _clearAll();
+      return;
+    }
     double dollar = double.parse(text);
     realController.text = (dollar*this.dollar).toStringAsFixed(2);
     euroController.text = (dollar*this.dollar / euro).toStringAsFixed(2);
   }
   void _euroChanged(String text){
+    if(text.isEmpty){
+      _clearAll();
+      return;
+    }
     double euro = double.parse(text);
     realController.text = (euro*this.euro).toStringAsFixed(2);
     dollarController.text = (euro*this.euro / dollar).toStringAsFixed(2);
+  }
+
+  void _clearAll() {
+    realController.text = '';
+    dollarController.text = '';
+    euroController.text = '';
   }
 
   @override
@@ -104,6 +127,7 @@ class _HomeState extends State<Home> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
                       Icon(Icons.monetization_on, size: 150.0, color:Colors.amber),
+                      Divider(),
                       buildTextField('𝙱𝚛𝚊𝚣𝚒𝚕𝚒𝚊𝚗 𝚁𝚎𝚊𝚕', 'R\$' , realController , _realChanged),
                       Divider(),
                       buildTextField('𝙳𝚘𝚕𝚕𝚊𝚛', 'US\$' , dollarController , _dollarChanged),
@@ -139,7 +163,6 @@ Widget buildTextField(String label , String prefix , TextEditingController contr
     );
 
 }
-
 
 
 
