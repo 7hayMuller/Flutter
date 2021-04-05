@@ -16,6 +16,17 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
+  @override
+  void initState() {
+    super.initState();
+
+    _readData().then((data) {
+      setState(() {
+        _toDoList = json.decode(data);
+      });
+    }) ;
+  }
+
   final _toDoController = TextEditingController();
   List _toDoList = [];
 
@@ -26,6 +37,7 @@ class _HomeState extends State<Home> {
       _toDoController.text = '';
       newToDo['ok'] = false;
       _toDoList.add(newToDo);
+      _saveData();
     });
   }
 
@@ -33,7 +45,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Your Tasks'),
+        title: Text('𝕄𝕪 𝕋𝕠 𝔻𝕠 𝕃𝕚𝕤𝕥'),
         backgroundColor: Colors.deepPurple,
         centerTitle: true,
       ),
@@ -75,6 +87,7 @@ class _HomeState extends State<Home> {
                   onChanged:(checked) {
                     setState((){
                     _toDoList[index]['ok'] = checked;
+                    _saveData();
                     });
                   }
                 );
