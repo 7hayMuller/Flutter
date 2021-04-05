@@ -15,11 +15,76 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
+  final _toDoController = TextEditingController();
   List _toDoList = [];
+
+  void _addToDo() {
+    setState(() {
+      Map<String, dynamic> newToDo = Map();
+      newToDo['title'] = _toDoController.text;
+      _toDoController.text = '';
+      newToDo['ok'] = false;
+      _toDoList.add(newToDo);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Your Tasks'),
+        backgroundColor: Colors.deepPurple,
+        centerTitle: true,
+      ),
+      body:Column(
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.fromLTRB(17.0,1.0,7.0,1.0),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: new TextField(
+                    controller: _toDoController,
+                    decoration: InputDecoration(
+                    labelText: 'Description',
+                    labelStyle: TextStyle(color:Colors.greenAccent)
+                      )
+                  ),
+                ),
+                RaisedButton(
+                  color:Colors.greenAccent,
+                  child: Text('+'),
+                  textColor: Colors.white,
+                  onPressed: _addToDo,
+                )
+              ],
+            ),
+          ),
+          Expanded(
+            child:ListView.builder(
+              padding:EdgeInsets.only(top:10.0),
+              itemCount: _toDoList.length,
+              itemBuilder: (context, index) {
+                return CheckboxListTile(
+                  title: Text(_toDoList[index]['title']),
+                  value: _toDoList[index]['ok'],
+                  secondary: CircleAvatar(
+                    child: Icon(_toDoList[index]['ok'] ? Icons.check : Icons.error),
+                  ),
+                  onChanged:(checked) {
+                    setState((){
+                    _toDoList[index]['ok'] = checked;
+                    });
+                  }
+                );
+              }),
+
+          )
+
+        ],
+      )
+    );
   }
 
   //Function to get a file
